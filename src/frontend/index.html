@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus | Student Data Intelligence</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            overflow: hidden; /* Prevent body scroll, use container scroll */
+            height: 100vh;
+        }
+
+        /* --- Layout --- */
+        .dashboard-wrapper {
+            display: flex;
+            height: 100vh;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        /* --- Sidebar Form --- */
+        .entry-panel {
+            flex: 0 0 380px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+        }
+
+        /* --- Main Content / Table --- */
+        .data-panel {
+            flex: 1;
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+        }
+
+        .table-responsive {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* --- UI Elements --- */
+        .form-label { font-weight: 600; font-size: 0.85rem; color: var(--text-muted); }
+        .form-control {
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            background: #f1f5f9;
+        }
+        .form-control:focus {
+            background: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-weight: 700;
+        }
+
+        .table thead th {
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 10;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .student-avatar {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: white; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700;
+        }
+
+        .score-badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        /* --- Notifications --- */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        /* Responsive Mobile */
+        @media (max-width: 992px) {
+            body { overflow: auto; height: auto; }
+            .dashboard-wrapper { flex-direction: column; height: auto; }
+            .entry-panel { flex: none; width: 100%; }
+            .data-panel { height: 600px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="toast-container" id="toast-box"></div>
+
+<div class="dashboard-wrapper">
+    <div class="entry-panel">
+        <div class="mb-4">
+            <span class="badge bg-soft-primary text-primary mb-2" style="background:rgba(79,70,229,0.1)">Nexus v3.0</span>
+            <h4 class="fw-bold m-0" id="form-title">Student Entry</h4>
+        </div>
+
+        <form id="student-form" class="flex-grow-1">
+            <input type="hidden" id="student-id">
+            <div class="row g-2 mb-3">
+                <div class="col-6">
+                    <label class="form-label">First Name</label>
+                    <input type="text" id="firstname" class="form-control" placeholder="enter name" required>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" id="lastname" class="form-control" placeholder="enter surname" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email Address</label>
+                <input type="email" id="email" class="form-control" placeholder="exp@example.com" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Phone</label>
+                <input type="text" id="phone" class="form-control" placeholder="+91 1234 567890" required>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Academic Score (%)</label>
+                <input type="number" id="mark" step="0.01" class="form-control" placeholder="0.00" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 shadow-sm" id="submit-btn">
+                <i class="fas fa-plus me-2"></i>Save Student
+            </button>
+            <button type="button" class="btn btn-link text-muted w-100 mt-2 text-decoration-none" id="cancel-btn" style="display:none;">Cancel Edit</button>
+        </form>
+
+        <div class="mt-4 pt-4 border-top">
+            <p class="small text-muted mb-0"><i class="fas fa-info-circle me-1"></i> Pre-flight validation active. System will block duplicate emails.</p>
+        </div>
+    </div>
+
+    <div class="data-panel">
+        <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold m-0">Intelligence Grid</h5>
+            <div class="text-muted small" id="record-count">0 Records</div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="student-table">
+                <thead>
+                <tr>
+                    <th>Student Profile</th>
+                    <th>Contact Details</th>
+                    <th class="text-center">Performance</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const apiUrl = 'http://localhost:8080/api/students';
+    let cachedStudents = [];
+
+    // --- Modern Alert System ---
+    function showAlert(msg, type = 'danger') {
+        const box = document.getElementById('toast-box');
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type} shadow-lg border-0 mb-2 fade show`;
+        toast.style.borderRadius = '12px';
+        toast.innerHTML = `<i class="fas ${type === 'danger' ? 'fa-exclamation-triangle' : 'fa-check-circle'} me-2"></i> ${msg}`;
+        box.appendChild(toast);
+        setTimeout(() => { toast.remove(); }, 3500);
+    }
+
+    // --- Load Data ---
+    async function loadStudents() {
+        try {
+            const res = await fetch(apiUrl);
+            cachedStudents = await res.json();
+            const tbody = document.querySelector('#student-table tbody');
+            document.getElementById('record-count').innerText = `${cachedStudents.length} Records`;
+            tbody.innerHTML = '';
+
+            cachedStudents.forEach(s => {
+                const isPass = s.mark >= 50;
+                const statusColor = isPass ? 'var(--success)' : 'var(--danger)';
+                const statusBg = isPass ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)';
+
+                tbody.innerHTML += `
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="student-avatar me-3">${s.firstname[0]}</div>
+                            <div>
+                                <div class="fw-bold text-dark">${s.firstname} ${s.lastname}</div>
+                                <div class="text-muted small">UID: #${s.id}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="small fw-semibold text-primary">${s.email}</div>
+                        <div class="text-muted small">${s.phone}</div>
+                    </td>
+                    <td class="text-center">
+                        <span class="score-badge" style="background:${statusBg}; color:${statusColor}">
+                            ${s.mark}%
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-light border-0" onclick="editStudent(${s.id})"><i class="fas fa-edit text-muted"></i></button>
+                        <button class="btn btn-sm btn-light border-0" onclick="deleteStudent(${s.id})"><i class="fas fa-trash text-danger"></i></button>
+                    </td>
+                </tr>`;
+            });
+        } catch(e) { console.error("Server Offline"); }
+    }
+
+    // --- Add/Update with Duplicate Check ---
+    document.getElementById('student-form').addEventListener('submit', async e => {
+        e.preventDefault();
+        const id = document.getElementById('student-id').value;
+        const email = document.getElementById('email').value.trim().toLowerCase();
+
+        // 🛑 DUPLICATE CHECK
+        const exists = cachedStudents.find(s => s.email.toLowerCase() === email && s.id != id);
+        if(exists) {
+            showAlert(`Duplicate Data: The email "${email}" is already in use.`);
+            return;
+        }
+
+        const student = {
+            firstname: document.getElementById('firstname').value,
+            lastname: document.getElementById('lastname').value,
+            email: email,
+            phone: document.getElementById('phone').value,
+            mark: parseFloat(document.getElementById('mark').value)
+        };
+
+        const config = {
+            method: id ? 'PUT' : 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(student)
+        };
+
+        const res = await fetch(id ? `${apiUrl}/${id}` : apiUrl, config);
+        if(res.ok) {
+            showAlert(id ? "Record Updated" : "Student Registered", "success");
+            resetForm();
+            loadStudents();
+        }
+    });
+
+    function resetForm() {
+        document.getElementById('student-form').reset();
+        document.getElementById('student-id').value = '';
+        document.getElementById('form-title').innerText = 'Student Entry';
+        document.getElementById('submit-btn').innerHTML = '<i class="fas fa-plus me-2"></i>Save Student';
+        document.getElementById('cancel-btn').style.display = 'none';
+    }
+
+    async function editStudent(id) {
+        const res = await fetch(`${apiUrl}/${id}`);
+        const s = await res.json();
+        document.getElementById('student-id').value = s.id;
+        document.getElementById('firstname').value = s.firstname;
+        document.getElementById('lastname').value = s.lastname;
+        document.getElementById('email').value = s.email;
+        document.getElementById('phone').value = s.phone;
+        document.getElementById('mark').value = s.mark;
+        document.getElementById('form-title').innerText = 'Update Student';
+        document.getElementById('submit-btn').innerHTML = '<i class="fas fa-sync me-2"></i>Update Record';
+        document.getElementById('cancel-btn').style.display = 'block';
+    }
+
+    async function deleteStudent(id) {
+        if(confirm('Are you sure you want to remove this student?')) {
+            await fetch(`${apiUrl}/${id}`, {method: 'DELETE'});
+            showAlert("Record Deleted", "success");
+            loadStudents();
+        }
+    }
+
+    document.getElementById('cancel-btn').addEventListener('click', resetForm);
+    loadStudents();
+</script>
+
+</body>
+</html>
