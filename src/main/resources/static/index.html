@@ -26,7 +26,7 @@
             background: radial-gradient(at top left, #f1f5f9, #e2e8f0);
             color: var(--text-main);
             min-height: 100vh;
-            overflow-x: hidden;
+            margin: 0;
         }
 
         /* --- Layout Structures --- */
@@ -35,7 +35,7 @@
             min-height: 100vh;
         }
 
-        /* --- Sidebar Navigation (The Form) --- */
+        /* --- Sidebar Navigation --- */
         .sidebar {
             width: 400px;
             background: var(--bg-glass);
@@ -46,7 +46,7 @@
             top: 0;
             height: 100vh;
             z-index: 1000;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
         }
 
         .main-content {
@@ -54,6 +54,7 @@
             padding: 2.5rem;
             max-width: 1400px;
             margin: 0 auto;
+            width: 100%;
         }
 
         /* --- UI Components --- */
@@ -81,7 +82,7 @@
             color: white;
             border: none;
             border-radius: 14px;
-            padding: 12px 24px;
+            padding: 14px 24px;
             font-weight: 700;
             transition: all 0.3s ease;
         }
@@ -92,7 +93,7 @@
             color: white;
         }
 
-        /* --- Custom Table Styling --- */
+        /* --- Table Styling --- */
         .table-container {
             border-radius: 24px;
             overflow: hidden;
@@ -108,16 +109,6 @@
             border: none;
         }
 
-        .custom-table tbody tr {
-            transition: all 0.2s;
-        }
-
-        .custom-table tbody tr:hover {
-            background: rgba(99, 102, 241, 0.03);
-            transform: scale(1.002);
-        }
-
-        /* --- Status Pills --- */
         .grade-badge {
             padding: 8px 16px;
             border-radius: 12px;
@@ -125,7 +116,7 @@
             font-size: 0.85rem;
         }
 
-        /* --- Mobile Responsiveness (The Magic) --- */
+        /* --- Mobile Responsiveness --- */
         @media (max-width: 1200px) {
             .sidebar { width: 350px; }
         }
@@ -138,40 +129,69 @@
                 position: relative;
                 border-right: none;
                 border-bottom: 1px solid var(--border-glass);
+                padding: 1.5rem;
             }
             .main-content { padding: 1.5rem; }
         }
 
         @media (max-width: 768px) {
-            /* Transform Table into Cards for Small Screens */
-            .custom-table thead { display: none; }
-            .custom-table tr {
-                display: block;
-                margin-bottom: 1rem;
-                border-radius: 18px;
-                background: white;
-                box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            /* Fix form stacking */
+            .sidebar .row.g-3 > .col-6 {
+                width: 100%;
             }
+
+            /* Transform Table into Cards */
+            .custom-table thead { display: none; }
+            .custom-table, .custom-table tbody, .custom-table tr, .custom-table td {
+                display: block;
+                width: 100%;
+            }
+
+            .custom-table tr {
+                margin-bottom: 1.25rem;
+                border-radius: 20px;
+                background: white;
+                padding: 1rem;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+                border: 1px solid var(--border-glass);
+            }
+
             .custom-table td {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
                 text-align: right;
-                padding: 12px 20px;
+                padding: 12px 8px;
                 border: none;
+                border-bottom: 1px solid #f1f5f9;
             }
+
+            .custom-table td:last-child {
+                border-bottom: none;
+                padding-top: 15px;
+            }
+
             .custom-table td::before {
                 content: attr(data-label);
                 font-weight: 700;
                 color: var(--text-muted);
-                font-size: 0.8rem;
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                margin-right: 1rem;
+            }
+
+            /* Avatar adjustment for mobile */
+            .avatar-box {
+                width: 38px !important;
+                height: 38px !important;
+                font-size: 0.9rem;
             }
         }
     </style>
 </head>
 <body>
 
-<div class="toast-container position-fixed top-0 end-0 p-3" id="toast-box"></div>
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100" id="toast-box"></div>
 
 <div class="app-shell">
     <aside class="sidebar">
@@ -220,25 +240,25 @@
             <button type="button" class="btn btn-light w-100 rounded-4" id="cancel-btn" style="display:none;">Discard Changes</button>
         </form>
 
-        <div class="mt-5 p-3 rounded-4 bg-white shadow-sm border small">
+        <div class="mt-4 p-3 rounded-4 bg-white shadow-sm border small d-none d-lg-block">
             <i class="fas fa-shield-halved text-primary me-2"></i> Encrypted end-to-end sync enabled.
         </div>
     </aside>
 
     <main class="main-content">
         <div class="row g-3 mb-5">
-            <div class="col-md-4">
+            <div class="col-6 col-md-4">
                 <div class="glass-card p-4">
-                    <div class="text-muted small fw-bold text-uppercase">Total Enrolled</div>
+                    <div class="text-muted small fw-bold text-uppercase" style="font-size: 0.7rem;">Total Enrolled</div>
                     <h2 class="fw-800 m-0" id="stat-count">0</h2>
                 </div>
             </div>
-            <div class="col-md-4 d-none d-md-block">
+            <div class="col-6 col-md-4">
                 <div class="glass-card p-4">
-                    <div class="text-muted small fw-bold text-uppercase">System Status</div>
+                    <div class="text-muted small fw-bold text-uppercase" style="font-size: 0.7rem;">System Status</div>
                     <div class="d-flex align-items-center mt-1">
-                        <div class="spinner-grow spinner-grow-sm text-success me-2"></div>
-                        <span class="fw-bold">Optimized</span>
+                        <div class="spinner-grow spinner-grow-sm text-success me-2" style="width: 10px; height: 10px;"></div>
+                        <span class="fw-bold" style="font-size: 1.1rem;">Live</span>
                     </div>
                 </div>
             </div>
@@ -246,7 +266,9 @@
 
         <div class="d-flex justify-content-between align-items-center mb-4 px-2">
             <h4 class="fw-bold m-0">Intelligence Grid</h4>
-            <button class="btn btn-sm btn-white glass-card" onclick="loadStudents()"><i class="fas fa-rotate me-2"></i>Refresh</button>
+            <button class="btn btn-sm btn-white glass-card px-3" onclick="loadStudents()">
+                <i class="fas fa-rotate me-2"></i>Refresh
+            </button>
         </div>
 
         <div class="glass-card table-container">
@@ -277,9 +299,14 @@
         const toast = document.createElement('div');
         toast.className = `alert alert-${type === 'success' ? 'dark' : 'danger'} shadow-lg border-0 mb-2 fade show`;
         toast.style.borderRadius = '16px';
+        toast.style.background = type === 'success' ? '#1e293b' : '#f43f5e';
+        toast.style.color = '#fff';
         toast.innerHTML = `<div class="d-flex align-items-center"><i class="fas fa-info-circle me-3"></i>${msg}</div>`;
         box.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
     }
 
     async function loadStudents() {
@@ -295,13 +322,13 @@
                 tbody.innerHTML += `
                 <tr>
                     <td data-label="Student">
-                        <div class="d-flex align-items-center">
-                            <div class="avatar-box me-3" style="background: linear-gradient(135deg, #6366f1, #a855f7); color:white; width:45px; height:45px; display:flex; align-items:center; justify-content:center; border-radius:12px; font-weight:bold;">
+                        <div class="d-flex align-items-center text-start">
+                            <div class="avatar-box me-3" style="background: linear-gradient(135deg, #6366f1, #a855f7); color:white; width:45px; height:45px; display:flex; align-items:center; justify-content:center; border-radius:12px; font-weight:bold; flex-shrink:0;">
                                 ${s.firstname[0]}
                             </div>
-                            <div>
-                                <div class="fw-bold text-dark">${s.firstname} ${s.lastname}</div>
-                                <div class="text-muted x-small">ID: #RE${s.id}</div>
+                            <div style="overflow: hidden;">
+                                <div class="fw-bold text-dark text-truncate">${s.firstname} ${s.lastname}</div>
+                                <div class="text-muted small">#RE${s.id}</div>
                             </div>
                         </div>
                     </td>
@@ -320,7 +347,11 @@
                     </td>
                 </tr>`;
             });
-        } catch(e) { console.error("Offline"); }
+        } catch(e) {
+            console.error("API Offline or Error");
+            // Optional: Dummy data for preview if API fails
+            // document.getElementById('stat-count').innerText = "!";
+        }
     }
 
     document.getElementById('student-form').addEventListener('submit', async e => {
@@ -334,17 +365,21 @@
             mark: parseFloat(document.getElementById('mark').value)
         };
 
-        const config = {
-            method: id ? 'PUT' : 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(student)
-        };
+        try {
+            const config = {
+                method: id ? 'PUT' : 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(student)
+            };
 
-        const res = await fetch(id ? `${apiUrl}/${id}` : apiUrl, config);
-        if(res.ok) {
-            showAlert(id ? "Record Synced" : "New Student Onboarded");
-            resetForm();
-            loadStudents();
+            const res = await fetch(id ? `${apiUrl}/${id}` : apiUrl, config);
+            if(res.ok) {
+                showAlert(id ? "Record Updated" : "New Student Onboarded");
+                resetForm();
+                loadStudents();
+            }
+        } catch (err) {
+            showAlert("Connection Error", "error");
         }
     });
 
@@ -358,28 +393,41 @@
 
     async function editStudent(id) {
         const s = cachedStudents.find(x => x.id == id);
+        if(!s) return;
+
         document.getElementById('student-id').value = s.id;
         document.getElementById('firstname').value = s.firstname;
         document.getElementById('lastname').value = s.lastname;
         document.getElementById('email').value = s.email;
         document.getElementById('phone').value = s.phone;
         document.getElementById('mark').value = s.mark;
+
         document.getElementById('form-title').innerText = 'Modify Record';
         document.getElementById('submit-btn').innerHTML = '<i class="fas fa-sync-alt me-2"></i>Apply Changes';
         document.getElementById('cancel-btn').style.display = 'block';
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Focus first field for better UX
+        setTimeout(() => document.getElementById('firstname').focus(), 500);
     }
 
     async function deleteStudent(id) {
-        if(confirm('Are you sure you want to delete this record?')) {
-            await fetch(`${apiUrl}/${id}`, {method: 'DELETE'});
-            showAlert("Record Removed", "error");
-            loadStudents();
+        if(confirm('Delete this record permanently?')) {
+            try {
+                await fetch(`${apiUrl}/${id}`, {method: 'DELETE'});
+                showAlert("Record Removed", "error");
+                loadStudents();
+            } catch (err) {
+                showAlert("Delete failed", "error");
+            }
         }
     }
 
     document.getElementById('cancel-btn').addEventListener('click', resetForm);
-    loadStudents();
+
+    // Initial Load
+    window.addEventListener('DOMContentLoaded', loadStudents);
 </script>
 
 </body>
