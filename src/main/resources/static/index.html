@@ -3,278 +3,333 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus | Student Data Intelligence</title>
+    <title>Nexus | AI-Driven Student Grid</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --primary: #4f46e5;
-            --bg-main: #f8fafc;
-            --card-bg: #ffffff;
-            --text-dark: #0f172a;
+            --primary: #6366f1;
+            --primary-soft: rgba(99, 102, 241, 0.1);
+            --bg-glass: rgba(255, 255, 255, 0.8);
+            --border-glass: rgba(255, 255, 255, 0.5);
+            --text-main: #1e293b;
             --text-muted: #64748b;
-            --border: #e2e8f0;
             --success: #10b981;
-            --danger: #ef4444;
+            --danger: #f43f5e;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-dark);
-            overflow: hidden; /* Prevent body scroll, use container scroll */
-            height: 100vh;
+            background: radial-gradient(at top left, #f1f5f9, #e2e8f0);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* --- Layout --- */
-        .dashboard-wrapper {
+        /* --- Layout Structures --- */
+        .app-shell {
             display: flex;
-            height: 100vh;
-            padding: 20px;
-            gap: 20px;
+            min-height: 100vh;
         }
 
-        /* --- Sidebar Form --- */
-        .entry-panel {
-            flex: 0 0 380px;
-            background: var(--card-bg);
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
-        }
-
-        /* --- Main Content / Table --- */
-        .data-panel {
-            flex: 1;
-            background: var(--card-bg);
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
-        }
-
-        .table-responsive {
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        /* --- UI Elements --- */
-        .form-label { font-weight: 600; font-size: 0.85rem; color: var(--text-muted); }
-        .form-control {
-            border-radius: 12px;
-            padding: 12px;
-            border: 1px solid var(--border);
-            background: #f1f5f9;
-        }
-        .form-control:focus {
-            background: #fff;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            border: none;
-            border-radius: 12px;
-            padding: 14px;
-            font-weight: 700;
-        }
-
-        .table thead th {
+        /* --- Sidebar Navigation (The Form) --- */
+        .sidebar {
+            width: 400px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid var(--border-glass);
+            padding: 2rem;
             position: sticky;
             top: 0;
+            height: 100vh;
+            z-index: 1000;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* --- UI Components --- */
+        .glass-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);
+        }
+
+        .form-floating > .form-control {
+            border-radius: 12px;
+            border: 1px solid #cbd5e1;
             background: #fff;
-            z-index: 10;
+        }
+
+        .form-floating > .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-soft);
+        }
+
+        .btn-modern {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 12px 24px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .btn-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+            color: white;
+        }
+
+        /* --- Custom Table Styling --- */
+        .table-container {
+            border-radius: 24px;
+            overflow: hidden;
+        }
+
+        .custom-table thead th {
+            background: #f8fafc;
+            padding: 1.25rem;
             font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.1em;
             color: var(--text-muted);
-            padding: 20px;
-            border-bottom: 1px solid var(--border);
+            border: none;
         }
 
-        .student-avatar {
-            width: 40px; height: 40px;
-            background: linear-gradient(135deg, #6366f1, #a855f7);
-            color: white; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700;
+        .custom-table tbody tr {
+            transition: all 0.2s;
         }
 
-        .score-badge {
-            padding: 6px 12px;
-            border-radius: 8px;
+        .custom-table tbody tr:hover {
+            background: rgba(99, 102, 241, 0.03);
+            transform: scale(1.002);
+        }
+
+        /* --- Status Pills --- */
+        .grade-badge {
+            padding: 8px 16px;
+            border-radius: 12px;
             font-weight: 700;
             font-size: 0.85rem;
         }
 
-        /* --- Notifications --- */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
+        /* --- Mobile Responsiveness (The Magic) --- */
+        @media (max-width: 1200px) {
+            .sidebar { width: 350px; }
         }
 
-        /* Responsive Mobile */
         @media (max-width: 992px) {
-            body { overflow: auto; height: auto; }
-            .dashboard-wrapper { flex-direction: column; height: auto; }
-            .entry-panel { flex: none; width: 100%; }
-            .data-panel { height: 600px; }
+            .app-shell { flex-direction: column; }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid var(--border-glass);
+            }
+            .main-content { padding: 1.5rem; }
+        }
+
+        @media (max-width: 768px) {
+            /* Transform Table into Cards for Small Screens */
+            .custom-table thead { display: none; }
+            .custom-table tr {
+                display: block;
+                margin-bottom: 1rem;
+                border-radius: 18px;
+                background: white;
+                box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            }
+            .custom-table td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                text-align: right;
+                padding: 12px 20px;
+                border: none;
+            }
+            .custom-table td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                color: var(--text-muted);
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="toast-container" id="toast-box"></div>
+<div class="toast-container position-fixed top-0 end-0 p-3" id="toast-box"></div>
 
-<div class="dashboard-wrapper">
-    <div class="entry-panel">
+<div class="app-shell">
+    <aside class="sidebar">
         <div class="mb-4">
-            <span class="badge bg-soft-primary text-primary mb-2" style="background:rgba(79,70,229,0.1)">Nexus v3.0</span>
-            <h4 class="fw-bold m-0" id="form-title">Student Entry</h4>
+            <span class="badge rounded-pill mb-2" style="background: var(--primary-soft); color: var(--primary)">Platform v4.0</span>
+            <h3 class="fw-bold" id="form-title">Student Entry</h3>
+            <p class="text-muted small">Update intelligence records in real-time.</p>
         </div>
 
-        <form id="student-form" class="flex-grow-1">
+        <form id="student-form">
             <input type="hidden" id="student-id">
-            <div class="row g-2 mb-3">
+
+            <div class="row g-3 mb-3">
                 <div class="col-6">
-                    <label class="form-label">First Name</label>
-                    <input type="text" id="firstname" class="form-control" placeholder="enter name" required>
+                    <div class="form-floating">
+                        <input type="text" id="firstname" class="form-control" placeholder="John" required>
+                        <label>First Name</label>
+                    </div>
                 </div>
                 <div class="col-6">
-                    <label class="form-label">Last Name</label>
-                    <input type="text" id="lastname" class="form-control" placeholder="enter surname" required>
+                    <div class="form-floating">
+                        <input type="text" id="lastname" class="form-control" placeholder="Doe" required>
+                        <label>Last Name</label>
+                    </div>
                 </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Email Address</label>
-                <input type="email" id="email" class="form-control" placeholder="exp@example.com" required>
+
+            <div class="form-floating mb-3">
+                <input type="email" id="email" class="form-control" placeholder="name@email.com" required>
+                <label>Email Address</label>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Phone</label>
-                <input type="text" id="phone" class="form-control" placeholder="+91 1234 567890" required>
+
+            <div class="form-floating mb-3">
+                <input type="text" id="phone" class="form-control" placeholder="+91" required>
+                <label>Phone Number</label>
             </div>
-            <div class="mb-4">
-                <label class="form-label">Academic Score (%)</label>
+
+            <div class="form-floating mb-4">
                 <input type="number" id="mark" step="0.01" class="form-control" placeholder="0.00" required>
+                <label>Academic Score (%)</label>
             </div>
-            <button type="submit" class="btn btn-primary w-100 shadow-sm" id="submit-btn">
-                <i class="fas fa-plus me-2"></i>Save Student
+
+            <button type="submit" class="btn-modern w-100 mb-2" id="submit-btn">
+                <i class="fas fa-plus-circle me-2"></i>Save Record
             </button>
-            <button type="button" class="btn btn-link text-muted w-100 mt-2 text-decoration-none" id="cancel-btn" style="display:none;">Cancel Edit</button>
+            <button type="button" class="btn btn-light w-100 rounded-4" id="cancel-btn" style="display:none;">Discard Changes</button>
         </form>
 
-        <div class="mt-4 pt-4 border-top">
-            <p class="small text-muted mb-0"><i class="fas fa-info-circle me-1"></i> Pre-flight validation active. System will block duplicate emails.</p>
+        <div class="mt-5 p-3 rounded-4 bg-white shadow-sm border small">
+            <i class="fas fa-shield-halved text-primary me-2"></i> Encrypted end-to-end sync enabled.
         </div>
-    </div>
+    </aside>
 
-    <div class="data-panel">
-        <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
-            <h5 class="fw-bold m-0">Intelligence Grid</h5>
-            <div class="text-muted small" id="record-count">0 Records</div>
+    <main class="main-content">
+        <div class="row g-3 mb-5">
+            <div class="col-md-4">
+                <div class="glass-card p-4">
+                    <div class="text-muted small fw-bold text-uppercase">Total Enrolled</div>
+                    <h2 class="fw-800 m-0" id="stat-count">0</h2>
+                </div>
+            </div>
+            <div class="col-md-4 d-none d-md-block">
+                <div class="glass-card p-4">
+                    <div class="text-muted small fw-bold text-uppercase">System Status</div>
+                    <div class="d-flex align-items-center mt-1">
+                        <div class="spinner-grow spinner-grow-sm text-success me-2"></div>
+                        <span class="fw-bold">Optimized</span>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0" id="student-table">
-                <thead>
-                <tr>
-                    <th>Student Profile</th>
-                    <th>Contact Details</th>
-                    <th class="text-center">Performance</th>
-                    <th class="text-end">Actions</th>
-                </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+
+        <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+            <h4 class="fw-bold m-0">Intelligence Grid</h4>
+            <button class="btn btn-sm btn-white glass-card" onclick="loadStudents()"><i class="fas fa-rotate me-2"></i>Refresh</button>
         </div>
-    </div>
+
+        <div class="glass-card table-container">
+            <div class="table-responsive">
+                <table class="table custom-table mb-0" id="student-table">
+                    <thead>
+                    <tr>
+                        <th>Student Profile</th>
+                        <th>Contact Info</th>
+                        <th class="text-center">Performance</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
 </div>
 
 <script>
-<!--    const apiUrl = 'http://localhost:8080/api/students';-->
-<!--const apiUrl = 'http://16.170.241.58:8080/api/students';-->
-const apiUrl = '/api/students';
+    const apiUrl = '/api/students';
     let cachedStudents = [];
 
-    // --- Modern Alert System ---
-    function showAlert(msg, type = 'danger') {
+    function showAlert(msg, type = 'success') {
         const box = document.getElementById('toast-box');
         const toast = document.createElement('div');
-        toast.className = `alert alert-${type} shadow-lg border-0 mb-2 fade show`;
-        toast.style.borderRadius = '12px';
-        toast.innerHTML = `<i class="fas ${type === 'danger' ? 'fa-exclamation-triangle' : 'fa-check-circle'} me-2"></i> ${msg}`;
+        toast.className = `alert alert-${type === 'success' ? 'dark' : 'danger'} shadow-lg border-0 mb-2 fade show`;
+        toast.style.borderRadius = '16px';
+        toast.innerHTML = `<div class="d-flex align-items-center"><i class="fas fa-info-circle me-3"></i>${msg}</div>`;
         box.appendChild(toast);
-        setTimeout(() => { toast.remove(); }, 3500);
+        setTimeout(() => toast.remove(), 3000);
     }
 
-    // --- Load Data ---
     async function loadStudents() {
         try {
             const res = await fetch(apiUrl);
             cachedStudents = await res.json();
             const tbody = document.querySelector('#student-table tbody');
-            document.getElementById('record-count').innerText = `${cachedStudents.length} Records`;
+            document.getElementById('stat-count').innerText = cachedStudents.length;
             tbody.innerHTML = '';
 
             cachedStudents.forEach(s => {
                 const isPass = s.mark >= 50;
-                const statusColor = isPass ? 'var(--success)' : 'var(--danger)';
-                const statusBg = isPass ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)';
-
                 tbody.innerHTML += `
                 <tr>
-                    <td>
+                    <td data-label="Student">
                         <div class="d-flex align-items-center">
-                            <div class="student-avatar me-3">${s.firstname[0]}</div>
+                            <div class="avatar-box me-3" style="background: linear-gradient(135deg, #6366f1, #a855f7); color:white; width:45px; height:45px; display:flex; align-items:center; justify-content:center; border-radius:12px; font-weight:bold;">
+                                ${s.firstname[0]}
+                            </div>
                             <div>
                                 <div class="fw-bold text-dark">${s.firstname} ${s.lastname}</div>
-                                <div class="text-muted small">UID: #${s.id}</div>
+                                <div class="text-muted x-small">ID: #RE${s.id}</div>
                             </div>
                         </div>
                     </td>
-                    <td>
-                        <div class="small fw-semibold text-primary">${s.email}</div>
+                    <td data-label="Contact">
+                        <div class="small fw-600">${s.email}</div>
                         <div class="text-muted small">${s.phone}</div>
                     </td>
-                    <td class="text-center">
-                        <span class="score-badge" style="background:${statusBg}; color:${statusColor}">
+                    <td data-label="Grade" class="text-center">
+                        <span class="grade-badge" style="background: ${isPass ? 'rgba(16,185,129,0.1)' : 'rgba(244,63,94,0.1)'}; color: ${isPass ? 'var(--success)' : 'var(--danger)'}">
                             ${s.mark}%
                         </span>
                     </td>
-                    <td class="text-end">
-                        <button class="btn btn-sm btn-light border-0" onclick="editStudent(${s.id})"><i class="fas fa-edit text-muted"></i></button>
-                        <button class="btn btn-sm btn-light border-0" onclick="deleteStudent(${s.id})"><i class="fas fa-trash text-danger"></i></button>
+                    <td data-label="Actions" class="text-end">
+                        <button class="btn btn-sm btn-light rounded-3 me-1" onclick="editStudent(${s.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-light rounded-3 text-danger" onclick="deleteStudent(${s.id})"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>`;
             });
-        } catch(e) { console.error("Server Offline"); }
+        } catch(e) { console.error("Offline"); }
     }
 
-    // --- Add/Update with Duplicate Check ---
     document.getElementById('student-form').addEventListener('submit', async e => {
         e.preventDefault();
         const id = document.getElementById('student-id').value;
-        const email = document.getElementById('email').value.trim().toLowerCase();
-
-        // 🛑 DUPLICATE CHECK
-        const exists = cachedStudents.find(s => s.email.toLowerCase() === email && s.id != id);
-        if(exists) {
-            showAlert(`Duplicate Data: The email "${email}" is already in use.`);
-            return;
-        }
-
         const student = {
             firstname: document.getElementById('firstname').value,
             lastname: document.getElementById('lastname').value,
-            email: email,
+            email: document.getElementById('email').value,
             phone: document.getElementById('phone').value,
             mark: parseFloat(document.getElementById('mark').value)
         };
@@ -287,7 +342,7 @@ const apiUrl = '/api/students';
 
         const res = await fetch(id ? `${apiUrl}/${id}` : apiUrl, config);
         if(res.ok) {
-            showAlert(id ? "Record Updated" : "Student Registered", "success");
+            showAlert(id ? "Record Synced" : "New Student Onboarded");
             resetForm();
             loadStudents();
         }
@@ -297,28 +352,28 @@ const apiUrl = '/api/students';
         document.getElementById('student-form').reset();
         document.getElementById('student-id').value = '';
         document.getElementById('form-title').innerText = 'Student Entry';
-        document.getElementById('submit-btn').innerHTML = '<i class="fas fa-plus me-2"></i>Save Student';
+        document.getElementById('submit-btn').innerHTML = '<i class="fas fa-plus-circle me-2"></i>Save Record';
         document.getElementById('cancel-btn').style.display = 'none';
     }
 
     async function editStudent(id) {
-        const res = await fetch(`${apiUrl}/${id}`);
-        const s = await res.json();
+        const s = cachedStudents.find(x => x.id == id);
         document.getElementById('student-id').value = s.id;
         document.getElementById('firstname').value = s.firstname;
         document.getElementById('lastname').value = s.lastname;
         document.getElementById('email').value = s.email;
         document.getElementById('phone').value = s.phone;
         document.getElementById('mark').value = s.mark;
-        document.getElementById('form-title').innerText = 'Update Student';
-        document.getElementById('submit-btn').innerHTML = '<i class="fas fa-sync me-2"></i>Update Record';
+        document.getElementById('form-title').innerText = 'Modify Record';
+        document.getElementById('submit-btn').innerHTML = '<i class="fas fa-sync-alt me-2"></i>Apply Changes';
         document.getElementById('cancel-btn').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     async function deleteStudent(id) {
-        if(confirm('Are you sure you want to remove this student?')) {
+        if(confirm('Are you sure you want to delete this record?')) {
             await fetch(`${apiUrl}/${id}`, {method: 'DELETE'});
-            showAlert("Record Deleted", "success");
+            showAlert("Record Removed", "error");
             loadStudents();
         }
     }
