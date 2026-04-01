@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus | AI-Driven Student Grid</title>
+    <title>Nexus Student Management | 2026 Edition</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -13,7 +13,7 @@
         :root {
             --primary: #6366f1;
             --primary-soft: rgba(99, 102, 241, 0.1);
-            --bg-glass: rgba(255, 255, 255, 0.8);
+            --bg-glass: rgba(255, 255, 255, 0.85);
             --border-glass: rgba(255, 255, 255, 0.5);
             --text-main: #1e293b;
             --text-muted: #64748b;
@@ -26,22 +26,24 @@
             background: radial-gradient(at top left, #f1f5f9, #e2e8f0);
             color: var(--text-main);
             min-height: 100vh;
+            margin: 0;
             overflow-x: hidden;
         }
 
         .app-shell { display: flex; min-height: 100vh; }
 
+        /* --- Sidebar Navigation --- */
         .sidebar {
             width: 400px;
             background: var(--bg-glass);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(15px);
             border-right: 1px solid var(--border-glass);
-            padding: 2rem;
+            padding: 2.5rem;
             position: sticky;
             top: 0;
             height: 100vh;
             z-index: 1000;
-            transition: all 0.4s ease;
+            overflow-y: auto;
         }
 
         .main-content {
@@ -52,17 +54,24 @@
             width: 100%;
         }
 
+        /* --- Glassmorphism UI --- */
         .glass-card {
             background: var(--bg-glass);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
             border: 1px solid var(--border-glass);
             border-radius: 24px;
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.04);
         }
 
         .form-floating > .form-control {
             border-radius: 12px;
             border: 1px solid #cbd5e1;
+            background: #fff;
+        }
+
+        .form-floating > .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-soft);
         }
 
         .btn-modern {
@@ -70,11 +79,17 @@
             color: white;
             border: none;
             border-radius: 14px;
-            padding: 12px 24px;
+            padding: 14px 24px;
             font-weight: 700;
             transition: all 0.3s ease;
         }
 
+        .btn-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        /* --- Grid System & Table --- */
         .custom-table thead th {
             background: #f8fafc;
             padding: 1.25rem;
@@ -92,7 +107,7 @@
             font-size: 0.85rem;
         }
 
-        /* --- MOBILE BUG FIXES --- */
+        /* --- RESPONSIVE OPTIMIZATIONS --- */
         @media (max-width: 992px) {
             .app-shell { flex-direction: column; }
             .sidebar {
@@ -103,7 +118,7 @@
                 border-bottom: 1px solid var(--border-glass);
                 padding: 1.5rem;
             }
-            .main-content { padding: 1.5rem; }
+            .main-content { padding: 1.25rem; }
         }
 
         @media (max-width: 768px) {
@@ -111,45 +126,55 @@
             .custom-table tr {
                 display: block;
                 margin-bottom: 1.5rem;
-                border-radius: 18px;
+                border-radius: 20px;
                 background: white;
-                box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-                padding: 10px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+                padding: 12px;
+                border: 1px solid var(--border-glass);
             }
             .custom-table td {
                 display: flex;
                 justify-content: space-between;
-                align-items: center;
-                padding: 12px 10px;
+                align-items: flex-start;
+                padding: 10px 5px;
                 border: none;
                 border-bottom: 1px solid #f1f5f9;
-                word-break: break-all; /* Fixes Email Overflow */
+                min-width: 0;
             }
             .custom-table td:last-child { border-bottom: none; }
 
+            /* Shortening Labels for Mobile Grid */
             .custom-table td::before {
                 content: attr(data-label);
-                font-weight: 700;
-                color: var(--text-muted);
-                font-size: 0.8rem;
-                margin-right: 15px;
+                font-weight: 800;
+                color: var(--primary);
+                font-size: 0.65rem;
                 text-transform: uppercase;
-                min-width: 80px;
-                text-align: left;
+                width: 40px;
+                flex-shrink: 0;
+                padding-top: 2px;
             }
 
-            .avatar-box { width: 40px !important; height: 40px !important; }
+            .td-data {
+                text-align: right;
+                word-break: break-all;
+                font-size: 0.9rem;
+                width: 100%;
+                color: var(--text-main);
+            }
+
+            .avatar-box { width: 38px !important; height: 38px !important; font-size: 0.9rem; }
         }
     </style>
 </head>
 <body>
 
-<div class="toast-container position-fixed top-0 end-0 p-3" id="toast-box"></div>
+<div class="toast-container position-fixed top-0 end-0 p-3" id="toast-box" style="z-index: 1060;"></div>
 
 <div class="app-shell">
     <aside class="sidebar">
         <div class="mb-4">
-            <span class="badge rounded-pill mb-2" style="background: var(--primary-soft); color: var(--primary)">Platform v4.0</span>
+            <span class="badge rounded-pill mb-2" style="background: var(--primary-soft); color: var(--primary)">Nexus System v4.2</span>
             <h3 class="fw-bold" id="form-title">Student Entry</h3>
             <p class="text-muted small">Update intelligence records in real-time.</p>
         </div>
@@ -157,14 +182,38 @@
         <form id="student-form">
             <input type="hidden" id="student-id">
             <div class="row g-3 mb-3">
-                <div class="col-6"><div class="form-floating"><input type="text" id="firstname" class="form-control" placeholder="John" required><label>First Name</label></div></div>
-                <div class="col-6"><div class="form-floating"><input type="text" id="lastname" class="form-control" placeholder="Doe" required><label>Last Name</label></div></div>
+                <div class="col-6">
+                    <div class="form-floating">
+                        <input type="text" id="firstname" class="form-control" placeholder="X" required>
+                        <label>First Name</label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-floating">
+                        <input type="text" id="lastname" class="form-control" placeholder="X" required>
+                        <label>Last Name</label>
+                    </div>
+                </div>
             </div>
-            <div class="form-floating mb-3"><input type="email" id="email" class="form-control" placeholder="name@email.com" required><label>Email Address</label></div>
-            <div class="form-floating mb-3"><input type="text" id="phone" class="form-control" placeholder="+91" required><label>Phone Number</label></div>
-            <div class="form-floating mb-4"><input type="number" id="mark" step="0.01" class="form-control" placeholder="0.00" required><label>Academic Score (%)</label></div>
 
-            <button type="submit" class="btn-modern w-100 mb-2" id="submit-btn"><i class="fas fa-plus-circle me-2"></i>Save Record</button>
+            <div class="form-floating mb-3">
+                <input type="email" id="email" class="form-control" placeholder="X" required>
+                <label>Email Address</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="text" id="phone" class="form-control" placeholder="X" required>
+                <label>Phone Number</label>
+            </div>
+
+            <div class="form-floating mb-4">
+                <input type="number" id="mark" step="0.01" class="form-control" placeholder="X" required>
+                <label>Academic Score (%)</label>
+            </div>
+
+            <button type="submit" class="btn-modern w-100 mb-2" id="submit-btn">
+                <i class="fas fa-save me-2"></i>Save Record
+            </button>
             <button type="button" class="btn btn-light w-100 rounded-4" id="cancel-btn" style="display:none;">Discard Changes</button>
         </form>
     </aside>
@@ -173,16 +222,16 @@
         <div class="row g-3 mb-5">
             <div class="col-6 col-md-4">
                 <div class="glass-card p-4">
-                    <div class="text-muted small fw-bold text-uppercase">Enrolled</div>
+                    <div class="text-muted small fw-bold text-uppercase" style="font-size: 0.7rem;">Enrolled Students</div>
                     <h2 class="fw-800 m-0" id="stat-count">0</h2>
                 </div>
             </div>
             <div class="col-6 col-md-4">
                 <div class="glass-card p-4">
-                    <div class="text-muted small fw-bold text-uppercase">Status</div>
+                    <div class="text-muted small fw-bold text-uppercase" style="font-size: 0.7rem;">Sync Status</div>
                     <div class="d-flex align-items-center mt-1">
-                        <div class="spinner-grow spinner-grow-sm text-success me-2"></div>
-                        <span class="fw-bold">Live</span>
+                        <div class="spinner-grow spinner-grow-sm text-success me-2" style="width:10px; height:10px;"></div>
+                        <span class="fw-bold">Active</span>
                     </div>
                 </div>
             </div>
@@ -190,10 +239,12 @@
 
         <div class="d-flex justify-content-between align-items-center mb-4 px-2">
             <h4 class="fw-bold m-0">Intelligence Grid</h4>
-            <button class="btn btn-sm btn-white glass-card" onclick="loadStudents()"><i class="fas fa-rotate me-2"></i>Refresh</button>
+            <button class="btn btn-sm btn-white glass-card px-3" onclick="loadStudents()">
+                <i class="fas fa-rotate me-2"></i>Refresh
+            </button>
         </div>
 
-        <div class="glass-card table-container">
+        <div class="glass-card table-container overflow-hidden">
             <div class="table-responsive">
                 <table class="table custom-table mb-0" id="student-table">
                     <thead>
@@ -204,7 +255,8 @@
                         <th class="text-end">Actions</th>
                     </tr>
                     </thead>
-                    <tbody></tbody>
+                    <tbody>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -218,9 +270,11 @@
     function showAlert(msg, type = 'success') {
         const box = document.getElementById('toast-box');
         const toast = document.createElement('div');
-        toast.className = `alert alert-${type === 'success' ? 'dark' : 'danger'} shadow-lg border-0 mb-2 fade show`;
+        toast.className = `alert alert-dark shadow-lg border-0 mb-2 fade show`;
         toast.style.borderRadius = '16px';
-        toast.innerHTML = `<div class="d-flex align-items-center"><i class="fas fa-info-circle me-3"></i>${msg}</div>`;
+        toast.style.background = type === 'success' ? '#1e293b' : '#f43f5e';
+        toast.style.color = '#fff';
+        toast.innerHTML = `<div class="d-flex align-items-center small"><i class="fas fa-info-circle me-2"></i>${msg}</div>`;
         box.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
     }
@@ -237,31 +291,39 @@
                 const isPass = s.mark >= 50;
                 tbody.innerHTML += `
                 <tr>
-                    <td data-label="Student">
-                        <div class="d-flex align-items-center">
-                            <div class="avatar-box me-3" style="background: linear-gradient(135deg, #6366f1, #a855f7); color:white; width:45px; height:45px; display:flex; align-items:center; justify-content:center; border-radius:12px; font-weight:bold; flex-shrink:0;">${s.firstname[0]}</div>
-                            <div>
+                    <td data-label="Std">
+                        <div class="td-data d-flex align-items-center justify-content-md-start justify-content-end">
+                            <div class="me-3 text-end text-md-start">
                                 <div class="fw-bold text-dark">${s.firstname} ${s.lastname}</div>
                                 <div class="text-muted small">ID: #RE${s.id}</div>
                             </div>
+                            <div class="avatar-box order-md-first me-md-3" style="background: linear-gradient(135deg, #6366f1, #a855f7); color:white; width:42px; height:42px; display:flex; align-items:center; justify-content:center; border-radius:12px; font-weight:bold; flex-shrink:0;">
+                                ${s.firstname[0]}
+                            </div>
                         </div>
                     </td>
-                    <td data-label="Contact">
-                        <div class="small fw-600">${s.email}</div>
-                        <div class="text-muted small">${s.phone}</div>
+                    <td data-label="Con">
+                        <div class="td-data">
+                            <div class="fw-bold text-primary">${s.email}</div>
+                            <div class="text-muted small">${s.phone}</div>
+                        </div>
                     </td>
-                    <td data-label="Grade" class="text-center">
-                        <span class="grade-badge" style="background: ${isPass ? 'rgba(16,185,129,0.1)' : 'rgba(244,63,94,0.1)'}; color: ${isPass ? 'var(--success)' : 'var(--danger)'}">
-                            ${s.mark}%
-                        </span>
+                    <td data-label="Scr" class="text-center">
+                        <div class="td-data text-center">
+                            <span class="grade-badge" style="background: ${isPass ? 'rgba(16,185,129,0.1)' : 'rgba(244,63,94,0.1)'}; color: ${isPass ? 'var(--success)' : 'var(--danger)'}">
+                                ${s.mark}%
+                            </span>
+                        </div>
                     </td>
-                    <td data-label="Actions" class="text-end">
-                        <button class="btn btn-sm btn-light rounded-3 me-1" onclick="editStudent(${s.id})"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-sm btn-light rounded-3 text-danger" onclick="deleteStudent(${s.id})"><i class="fas fa-trash"></i></button>
+                    <td data-label="Act" class="text-end">
+                        <div class="td-data">
+                            <button class="btn btn-sm btn-light border rounded-3 me-1" onclick="editStudent(${s.id})"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-light border rounded-3 text-danger" onclick="deleteStudent(${s.id})"><i class="fas fa-trash"></i></button>
+                        </div>
                     </td>
                 </tr>`;
             });
-        } catch(e) { console.error("Offline"); }
+        } catch(e) { console.error("API Connection Error"); }
     }
 
     document.getElementById('student-form').addEventListener('submit', async e => {
@@ -283,7 +345,7 @@
 
         const res = await fetch(id ? `${apiUrl}/${id}` : apiUrl, config);
         if(res.ok) {
-            showAlert(id ? "Record Synced" : "New Student Onboarded");
+            showAlert(id ? "Record Updated" : "Entry Created");
             resetForm();
             loadStudents();
         }
@@ -293,12 +355,13 @@
         document.getElementById('student-form').reset();
         document.getElementById('student-id').value = '';
         document.getElementById('form-title').innerText = 'Student Entry';
-        document.getElementById('submit-btn').innerHTML = '<i class="fas fa-plus-circle me-2"></i>Save Record';
+        document.getElementById('submit-btn').innerHTML = '<i class="fas fa-save me-2"></i>Save Record';
         document.getElementById('cancel-btn').style.display = 'none';
     }
 
     function editStudent(id) {
         const s = cachedStudents.find(x => x.id == id);
+        if(!s) return;
         document.getElementById('student-id').value = s.id;
         document.getElementById('firstname').value = s.firstname;
         document.getElementById('lastname').value = s.lastname;
@@ -306,21 +369,21 @@
         document.getElementById('phone').value = s.phone;
         document.getElementById('mark').value = s.mark;
         document.getElementById('form-title').innerText = 'Modify Record';
-        document.getElementById('submit-btn').innerHTML = '<i class="fas fa-sync-alt me-2"></i>Apply Changes';
+        document.getElementById('submit-btn').innerHTML = '<i class="fas fa-sync-alt me-2"></i>Update Entry';
         document.getElementById('cancel-btn').style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     async function deleteStudent(id) {
-        if(confirm('Are you sure you want to delete this record?')) {
+        if(confirm('Permanently remove this record?')) {
             await fetch(`${apiUrl}/${id}`, {method: 'DELETE'});
-            showAlert("Record Removed", "error");
+            showAlert("Entry Removed", "error");
             loadStudents();
         }
     }
 
     document.getElementById('cancel-btn').addEventListener('click', resetForm);
-    loadStudents();
+    window.addEventListener('DOMContentLoaded', loadStudents);
 </script>
 
 </body>
