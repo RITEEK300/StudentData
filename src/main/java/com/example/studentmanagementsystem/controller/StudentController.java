@@ -14,8 +14,8 @@ import java.util.List;
 public class StudentController {
     private final StudentService studentService;
     @GetMapping
-    public List<Student> getAllStudents() {
-        return studentService.getAllStudents();
+    public ResponseEntity<List<Student>> getAllStudents() {
+        return ResponseEntity.ok(studentService.getAllStudents());
     }
     @GetMapping("/{id}")
     public Student getStudentById(@PathVariable Long id) {
@@ -25,7 +25,7 @@ public class StudentController {
     public Student addStudent(@RequestBody Student student) {
         return studentService.addStudent(student);
     }
-    @PostMapping("/{multi}")
+    @PostMapping("/bulk")
     public List<Student> addStudentsAll(@RequestBody List<Student> students) {
         return studentService.addStudentAll(students);
     }
